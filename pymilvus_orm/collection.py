@@ -43,7 +43,7 @@ def _check_schema(schema):
         if field.dtype == DataType.FLOAT_VECTOR or field.dtype == DataType.BINARY_VECTOR:
             vector_fields.append(field.name)
     if len(vector_fields) < 1:
-        raise SchemaNotReadyException(0, "Schema must at least have one vector column!")
+        raise SchemaNotReadyException(0, "Schema must have at least one vector column!")
 
 
 def _check_data_schema(fields, data):
@@ -52,18 +52,18 @@ def _check_data_schema(fields, data):
             for j, _ in enumerate(data[field.name]):
                 tmp_type = infer_dtype_bydata(data[field.name][j])
                 if tmp_type != field.dtype:
-                    raise DataNotMatch(0, "The data in the same column must be of the same type.")
+                    raise DataNotMatch(0, "Data in the same column must be of the same type.")
     else:
         for i, field in enumerate(fields):
             for j, _ in enumerate(data[i]):
                 tmp_type = infer_dtype_bydata(data[i][j])
                 if tmp_type != field.dtype:
-                    raise DataNotMatch(0, "The data in the same column must be of the same type.")
+                    raise DataNotMatch(0, "Data in the same column must be of the same type.")
 
 
 class Collection:
     """
-    This is a class corresponding to collection in milvus.
+    Class for managing collections in milvus.
     """
 
     def __init__(self, name, schema=None, **kwargs):
@@ -71,10 +71,10 @@ class Collection:
         Constructs a collection by name, schema and other parameters.
         Connection information is contained in kwargs.
 
-        :param name: the name of collection
+        :param name: The name of collection.
         :type name: str
 
-        :param schema: the schema of collection
+        :param schema: The schema of collection.
         :type schema: class `schema.CollectionSchema`
 
         :example:
@@ -129,7 +129,7 @@ class Collection:
     def _get_connection(self):
         conn = get_connection(self._get_using())
         if conn is None:
-            raise ConnectionNotExistException(0, "should create connect first")
+            raise ConnectionNotExistException(0, "Connection should be created first.")
         return conn
 
     def _check_insert_data_schema(self, data):
@@ -141,7 +141,7 @@ class Collection:
         infer_fields = parse_fields_from_data(data)
 
         if len(infer_fields) != len(self._schema):
-            raise DataTypeNotMatchException(0, "Column cnt not match with schema")
+            raise DataTypeNotMatchException(0, "Column does not match schema.")
 
         _check_data_schema(infer_fields, data)
 
@@ -195,7 +195,7 @@ class Collection:
         Returns a text description of the collection.
 
         :return str:
-            Collection description text, returned when the operation succeeds.
+            A text description of the collection.
 
         :example:
         >>> from pymilvus_orm.collection import Collection
@@ -220,7 +220,7 @@ class Collection:
         Returns the collection name.
 
         :return str:
-            The collection name, returned when the operation succeeds.
+            Name of the collection.
 
         :example:
         >>> from pymilvus_orm.collection import Collection
@@ -242,12 +242,11 @@ class Collection:
     @property
     def is_empty(self) -> bool:
         """
-        Whether the collection is empty.
-        This method need to call `num_entities <#pymilvus_orm.Collection.num_entities>`_.
+        Checks whether the collection is empty.
 
         :return bool:
-            * True: The collection is empty.
-            * False: The collection is  gfghnot empty.
+            * ``True``: The collection is empty.
+            * ``False``: The collection is not empty.
 
         :example:
         >>> from pymilvus_orm.collection import Collection
@@ -257,7 +256,7 @@ class Collection:
         >>> connections.connect(alias="default")
         <milvus.client.stub.Milvus object at 0x7f9a190ca898>
         >>> field = FieldSchema("int64", DataType.INT64, descrition="int64", is_primary=False)
-        >>> schema = CollectionSchema(fields=[field], description="Tests if a collection is empty")
+        >>> schema = CollectionSchema(fields=[field], description="Tests if a collection is empty.")
         >>> collection = Collection(name="test_collection", schema=schema)
         >>> collection.is_empty
         True
@@ -330,13 +329,13 @@ class Collection:
 
     def drop(self, **kwargs):
         """
-        Drops the collection together with its index files.
+        Drops the collection and its index files.
 
         :param kwargs:
             * *timeout* (``float``) --
-            An optional duration of time in seconds to allow for the RPC.
-            If timeout is set to None,
-            the client keeps waiting until the server responds or an error occurs.
+              Optional. Time in seconds allowed for remote procedure call (RPC). 
+              If *timeout* is set to ``None``, 
+              the client waits until the server responds or an error occurs.
 
         :raises CollectionNotExistException: If the collection does not exist.
 
@@ -370,16 +369,17 @@ class Collection:
         """
         Loads the collection from disk to memory.
 
-        :param partition_names: The specified partitions to load.
+        :param partition_names: The partitions to load.
         :type partition_names: list[str]
 
         :param kwargs:
             * *timeout* (``float``) --
-              An optional duration of time in seconds to allow for the RPC. If timeout
-              is set to None, the client keeps waiting until the server responds or error occurs.
+              Optional. Time in seconds allowed for remote procedure call (RPC). 
+              If *timeout* is set to ``None``, 
+              the client waits until the server responds or an error occurs.
 
         :raises CollectionNotExistException: If the collection does not exist.
-        :raises ParamError: If the parameters are invalid.
+        :raises ParamError: If an invalid parameter is used.
         :raises BaseException: If the specified field, index or partition does not exist.
 
         :example:
@@ -412,8 +412,9 @@ class Collection:
 
         :param kwargs:
             * *timeout* (``float``) --
-              An optional duration of time in seconds to allow for the RPC. If timeout
-              is set to None, the client keeps waiting until the server responds or an error occurs.
+              Optional. Time in seconds allowed for remote procedure call (RPC). 
+              If *timeout* is set to ``None``, 
+              the client waits until the server responds or an error occurs.
 
         :raises CollectionNotExistException: If collection does not exist.
         :raises BaseException: If collection has not been loaded to memory.
@@ -454,11 +455,12 @@ class Collection:
 
         :param kwargs:
             * *timeout* (``float``) --
-              An optional duration of time in seconds to allow for the RPC. If timeout
-              is set to None, the client keeps waiting until the server responds or an error occurs.
+              Optional. Time in seconds allowed for remote procedure call (RPC). 
+              If *timeout* is set to ``None``, 
+              the client waits until the server responds or an error occurs.
 
         :raises CollectionNotExistException: If the specified collection does not exist.
-        :raises ParamError: If input parameters are invalid.
+        :raises ParamError: If an invalid parameter is used.
         :raises BaseException: If the specified partition does not exist.
 
         :example:
@@ -511,8 +513,9 @@ class Collection:
         :type  partition_names: list[str]
         :param output_fields: The fields to return in the search result, not supported now.
         :type  output_fields: list[str]
-        :param timeout: An optional duration of time in seconds to allow for the RPC. When timeout
-                        is set to None, client waits until server response or error occur.
+        :param timeout: Optional. Time in seconds allowed for remote procedure call (RPC). 
+                        If *timeout* is set to ``None``, 
+                        the client waits until the server responds or an error occurs.
         :type  timeout: float
         :param kwargs:
             * *_async* (``bool``) --
@@ -527,8 +530,8 @@ class Collection:
             the number of vectors to query (nq), the second dimension is the number of limit(topk).
         :rtype: SearchResult
 
-        :raises RpcError: If gRPC encounter an error.
-        :raises ParamError: If parameters are invalid.
+        :raises RpcError: If gRPC encounters an error.
+        :raises ParamError: If an invalid parameter is used.
         :raises BaseException: If the return result from server is not ok.
 
         :example:
@@ -585,17 +588,18 @@ class Collection:
         :param partition_names: Name of partitions that contain entities
         :type  partition_names: list[str]
 
-        :param timeout: An optional duration of time in seconds to allow for the RPC. When timeout
-                        is set to None, client waits until server response or error occur
+        :param timeout: Optional. Time in seconds allowed for remote procedure call (RPC). 
+                        If *timeout* is set to ``None``, 
+                        the client waits until the server responds or an error occurs.
         :type  timeout: float
 
         :return: A dict that contains all results
         :rtype: dict
 
         :raises:
-            RpcError: If gRPC encounter an error
-            ParamError: If parameters are invalid
-            BaseException: If the return result from server is not ok
+            RpcError: If gRPC encounters an error.
+            ParamError: If an invalid parameter is used. 
+            BaseException: If the return result from server is not OK. 
         """
         conn = self._get_connection()
         res = conn.get(self._name, ids, output_fields, partition_names, timeout)
@@ -614,17 +618,18 @@ class Collection:
         :param partition_names: Name of partitions that contain entities
         :type  partition_names: list[str]
 
-        :param timeout: An optional duration of time in seconds to allow for the RPC. When timeout
-                        is set to None, client waits until server response or error occur
+        :param timeout: Optional. Time in seconds allowed for remote procedure call (RPC). 
+                        If *timeout* is set to ``None``, 
+                        the client waits until the server responds or an error occurs.
         :type  timeout: float
 
         :return: A list that contains all results
         :rtype: list
 
         :raises:
-            RpcError: If gRPC encounter an error
-            ParamError: If parameters are invalid
-            BaseException: If the return result from server is not ok
+            RpcError: If gRPC encounters an error
+            ParamError: If an invalid parameter is used.
+            BaseException: If the return result from server is not OK. 
         """
         conn = self._get_connection()
         res = conn.query(self._name, expr, output_fields, partition_names, timeout)
@@ -638,7 +643,7 @@ class Collection:
         :return list[Partition]:
             List of Partition object, return when operation is successful.
 
-        :raises CollectionNotExistException: If collection doesn't exist.
+        :raises CollectionNotExistException: If collection does not exist.
 
         :example:
         >>> from pymilvus_orm.collection import Collection
@@ -670,8 +675,8 @@ class Collection:
         :return Partition:
             Partition object corresponding to partition_name.
 
-        :raises CollectionNotExistException: If collection doesn't exist.
-        :raises BaseException: If partition doesn't exist.
+        :raises CollectionNotExistException: If collection does not exist.
+        :raises BaseException: If partition does not exist.
 
         :example:
         >>> from pymilvus_orm.collection import Collection
@@ -705,8 +710,8 @@ class Collection:
         :return Partition:
             Partition object corresponding to partition_name.
 
-        :raises CollectionNotExistException: If collection doesn't exist.
-        :raises BaseException: If partition doesn't exist.
+        :raises CollectionNotExistException: If collection does not exist.
+        :raises BaseException: If partition does not exist.
 
         :example:
         >>> from pymilvus_orm.collection import Collection
@@ -729,15 +734,16 @@ class Collection:
 
     def has_partition(self, partition_name) -> bool:
         """
-        Checks if a specified partition exists.
+        Checks whether a specified partition exists.
 
         :param partition_name: The name of the partition to check
         :type  partition_name: str
 
         :return bool:
-            Whether a specified partition exists.
+            * ``True``: The specified partition exists.
+            * ``False``: The specified partition does not exist.
 
-        :raises CollectionNotExistException: If collection doesn't exist.
+        :raises CollectionNotExistException: If collection does not exist.
 
         :example:
         >>> from pymilvus_orm.collection import Collection
@@ -770,11 +776,12 @@ class Collection:
 
         :param kwargs:
             * *timeout* (``float``) --
-              An optional duration of time in seconds to allow for the RPC. If timeout
-              is set to None, the client keeps waiting until the server responds or an error occurs.
+              Optional. Time in seconds allowed for remote procedure call (RPC). 
+              If *timeout* is set to ``None``, 
+              the client waits until the server responds or an error occurs.
 
-        :raises CollectionNotExistException: If collection doesn't exist.
-        :raises BaseException: If partition doesn't exist.
+        :raises CollectionNotExistException: If collection does not exist.
+        :raises BaseException: If partition does not exist.
 
         :example:
         >>> from pymilvus_orm.collection import Collection
@@ -797,7 +804,7 @@ class Collection:
         False
         """
         if self.has_partition(partition_name) is False:
-            raise Exception("Partition doesn't exist")
+            raise Exception("The partition does not exist.")
         conn = self._get_connection()
         return conn.drop_partition(self._name, partition_name, timeout=kwargs.get("timeout", None))
 
@@ -872,17 +879,20 @@ class Collection:
 
     def create_index(self, field_name, index_params, **kwargs) -> Index:
         """
-        Creates index for a specified field. Return Index Object.
+        Creates index for a specified field. 
+        
+        :return Index:
+            An index object.
 
-        :param field_name: The name of the field to create an index for.
+        :param field_name: The name of the field to create index for.
         :type  field_name: str
 
         :param index_params: The indexing parameters.
         :type  index_params: dict
 
         :raises CollectionNotExistException: If the collection does not exist.
-        :raises ParamError: If the index parameters are invalid.
-        :raises BaseException: If field does not exist.
+        :raises ParamError: If an invalid parameter is used.
+        :raises BaseException: If the field does not exist.
         :raises BaseException: If the index has been created.
 
         :example:
@@ -913,7 +923,8 @@ class Collection:
         Checks whether a specified index exists.
 
         :return bool:
-            Whether the specified index exists.
+            * ``True``: The specified index exists.
+            * ``False``: The specified index does not exist.
 
         :raises CollectionNotExistException: If the collection does not exist.
 
@@ -946,13 +957,13 @@ class Collection:
 
     def drop_index(self, **kwargs):
         """
-        Drop index and its corresponding index files.
+        Drop index and the corresponding index files.
 
         :param kwargs:
             * *timeout* (``float``) --
-              An optional duration of time in seconds to allow for the RPC. If timeout
-              is set to None, the client keeps waiting until the server responds or an error occurs.
-              Optional. A duration of time in seconds.
+              Optional. Time in seconds allowed for remote procedure call (RPC). 
+              If *timeout* is set to ``None``, 
+              the client waits until the server responds or an error occurs.
 
         :raises CollectionNotExistException: If the collection does not exist.
         :raises BaseException: If the index does not exist or has been dropped.
@@ -978,7 +989,7 @@ class Collection:
         False
         """
         if self.has_index() is False:
-            raise Exception("Index doesn't exist")
+            raise Exception("The index does not exist.")
         conn = self._get_connection()
         tmp_index = conn.describe_index(self._name, "")
         if tmp_index is not None:

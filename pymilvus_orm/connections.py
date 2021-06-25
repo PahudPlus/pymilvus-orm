@@ -57,7 +57,7 @@ class Connections(metaclass=SingleInstanceMetaClass):
 
     def __init__(self):
         """
-        Construct a Connections object.
+        Constructs a Connections object.
         """
         self._kwargs = {"default": {"host": DefaultConfig.DEFAULT_HOST,
                                     "port": DefaultConfig.DEFAULT_PORT}}
@@ -116,10 +116,9 @@ class Connections(metaclass=SingleInstanceMetaClass):
         :return Milvus:
             A milvus connection created by the passed parameters.
 
-        :raises NotImplementedError: If handler in connection parameters is not GRPC.
+        :raises NotImplementedError: If handler in connection parameters is not gRPC.
         :raises ParamError: If pool in connection parameters is not supported.
-        :raises Exception: If server specified in parameters is not ready, we cannot connect to
-                           server.
+        :raises Exception: If the server specified in parameters is not ready.
 
         :example:
         >>> from pymilvus_orm import connections
@@ -128,8 +127,8 @@ class Connections(metaclass=SingleInstanceMetaClass):
         """
         if alias in self._conns:
             if len(kwargs) > 0 and self._kwargs[alias] != kwargs:
-                raise ParamError(f"The connection named {alias} already creating, "
-                                 "but passed parameters don't match the configured parameters, "
+                raise ParamError(f"The connection {alias} has already been created, "
+                                 "but passed parameters do not match the configured parameters, "
                                  f"passed: {kwargs}, "
                                  f"configured: {self._kwargs[alias]}")
             return self._conns[alias]
